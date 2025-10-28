@@ -15,15 +15,14 @@ allWords = []
 for sub in subsText:
     tokens = tokenizer.tokenize(sub)
     for token in tokens:
-        # MeCab returns '*' if base_form is unknown
-        if hasattr(token, "base_form") and token.base_form != "*" and token.base_form != "":
-            allWords.append(token.base_form)
-        else:
-            # If base_form is unknown, append the surface word
-            allWords.append(token.surface)
+        char = token.base_form
+        if not char.isdigit():
+            if char[0] not in ('(', ')'):
+                allWords.append(char)
 
 #Exclude all 1-character words
 allWords = [word for word in allWords if len(word) > 1]
+print("All Words: " + str(len(allWords)))
 
 #Exclude all Greetings
 common_greetings = [
@@ -163,6 +162,49 @@ for word in allWords:
 allWords = animeWords
 animeWords = []
 print("Excluding Manga words: " + str(len(allWords)))
+
+#Exclude conjunction words
+japanese_conjunctions = [
+    "そして", "それから", "それに", "さらに", "また", "しかも", "そのうえ", "おまけに", "だから", "ですから",
+    "したがって", "そのため", "ゆえに", "それで", "ところが", "しかし", "でも", "けれど", "けれども", "だが",
+    "が", "なのに", "にもかかわらず", "それにもかかわらず", "ただし", "とはいえ", "それでも", "すると", "そこで", "それなら",
+    "それでは", "では", "じゃ", "つまり", "すなわち", "要するに", "結局", "ようするに", "一方で", "その一方で",
+    "逆に", "反対に", "または", "あるいは", "もしくは", "それとも", "つまりは", "なぜなら", "というのは", "だって",
+    "ので", "から", "その結果", "結果として", "同時に", "一緒に", "その間", "ちなみに", "ところで", "それにしても",
+    "それどころか", "それどころではなく", "のみならず", "ばかりか", "と同時に", "するとどうだろう", "さて", "ではさておき", "そういえば", "それはさておき",
+    "かつて", "まず", "次に", "その後", "結局のところ", "最後に", "一方", "それぞれ", "とにかく", "ともかく",
+    "いずれにせよ", "いずれにしても", "なんとなく", "一応", "とりあえず", "たとえば", "その上で", "そのほか", "それに対して", "反面",
+    "要は", "とはつまり", "要するところ", "すぐに", "以来", "その際", "同様に", "加えて", "および", "並びに"
+]
+for word in allWords:
+    if word not in japanese_conjunctions:
+        animeWords.append(word)
+
+allWords = animeWords
+animeWords = []
+print("Excluding Conjunction words: " + str(len(allWords)))
 print(allWords)
 
-#Exclude conjunction, polite-ending words
+japanese_polite_endings = [
+    "です", "ます", "でした", "ました", "ません", "ませんでした", "でしょう", "でしょうか", "でしたね", "でしたか",
+    "ですね", "ですか", "でございます", "でございますか", "でございますね", "でございました", "でございましたか", "でございますよ", "ますね", "ますか",
+    "ましたね", "ましたか", "ませんね", "ませんか", "ましょう", "ましょうか", "ましょ", "ましょっか", "でしょうね", "でしょうねぇ",
+    "ですな", "ですなぁ", "ですこと", "であります", "でありますか", "でありました", "でありますね", "でありますよ", "でございまする", "でおます",
+    "でやんす", "でありんす", "でごじゃります", "でおじゃる", "でござる", "でござるか", "でござるな", "でござるよ", "でごぜぇます", "でごぜぇまする",
+    "でごじゃりまする", "でございますわ", "でございますの", "でございますこと", "でございますかしら", "でございますねぇ", "ですわ", "ですの", "ですこと", "ですかしら",
+    "ますわ", "ますの", "ますこと", "ますかしら", "でしたわ", "でしたの", "でしたこと", "でしたかしら", "でしたでしょう", "でしたでしょうか",
+    "でしょうわ", "でしょうの", "でしょうこと", "でしょうかしら", "でありまする", "でございますで", "でありんすえ", "でござります", "でござりまする", "でおじゃります",
+    "でおじゃりまする", "でおますえ", "でありんすわ", "でごじゃりますえ", "でござりますえ", "でおじゃりますえ", "でありますわ", "でありますの", "でありますこと", "でありますかしら",
+    "ですなぁ", "ですぞ", "でござろう", "でござろうか", "でござろうな", "でござろうよ", "でありましょう", "でありましょうか", "でございましょう", "でございましょうか"
+]
+for word in allWords:
+    if word not in japanese_polite_endings:
+        animeWords.append(word)
+
+allWords = animeWords
+animeWords = []
+print("Excluding Polite-ending words: " + str(len(allWords)))
+print(allWords)
+
+
+#Exclude polite-ending words

@@ -13,22 +13,16 @@ while line:
     lineNum += 1
     line = jpCommonWordsFile.readline()
 
-jpPunctuation = {
-    "。": "。", "、": "、", "・": "・", "「": "「", "」": "」",
-    "『": "『", "』": "』", "（": "（", "）": "）", "［": "［", "(": "(", ")": ")",
-    "］": "］", "｛": "｛", "｝": "｝", "【": "【", "】": "】",
-    "〈": "〈", "〉": "〉", "《": "《", "》": "》", "〝": "〝",
-    "〟": "〟", "〜": "〜", "ー": "ー", "…": "…", "‥": "‥",
-    "：": "：", "；": "；", "？": "？", "！": "！", "／": "／",
-    "＼": "＼", "｜": "｜", "＿": "＿", "＠": "＠", "＃": "＃",
-    "＊": "＊", "＋": "＋", "－": "－", "＝": "＝", "＜": "＜",
-    "＞": "＞", "％": "％", "＆": "＆", "＄": "＄", "＾": "＾",
-    "｀": "｀", "〆": "〆", "々": "々", "〃": "〃", "〄": "〄",
-    "゛": "゛", "゜": "゜", "‐": "‐", "―": "―", "─": "─",
-    "○": "○", "×": "×", "△": "△", "□": "□", "◇": "◇",
-    "･": "･", "“": "“", "”": "”", "’": "’", "‘": "‘",
-    "‾": "‾", "＾": "＾", "～": "～"
-}
+jpPunctuation = [
+    "。", "、", "・", "「", "」",
+    "『", "』", "（", "）", "［", "(", ")", "］", "｛", "｝",
+    "【", "】", "〈", "〉", "《", "》", "〝", "〟", "〜", "ー",
+    "…", "‥", "：", "；", "？", "！", "／", "＼", "｜", "＿",
+    "＠", "＃", "＊", "＋", "－", "＝", "＜", "＞", "％", "＆",
+    "＄", "＾", "｀", "〆", "々", "〃", "〄", "゛", "゜", "‐",
+    "―", "─", "○", "×", "△", "□", "◇", "･", "“", "”", "’",
+    "‘", "‾", "～"
+]
 
 tokenizer = Tokenizer()
 subs = pysrt.open('example.srt')
@@ -49,8 +43,6 @@ for sub in subs:
 #Exclude common words that are in dict, punctuations, 1 word character, digital String
 
 print(len(allWords))
-
-print(animeWords)
 print(len(animeWords))
 
 #Created an animeDict to indicates occurance of each words
@@ -63,15 +55,24 @@ for word in animeWords:
 
 #Getting rid of words that occurred only once
 newDict = {word: count for word, count in frequentWords.items() if count > 1}
-print(newDict)
-print(str(len(newDict)) + "\n")
 
 #We will get rid of all remaining words, example です、してる、ない、毛と、なに、まあ...
 #い　と　る　す　あ　に
+hiraganaChar = [
+    "あ", "い", "う", "え", "お", "か", "き", "く",
+    "け", "こ", "さ", "し", "す", "せ", "そ", "た",
+    "ち", "つ", "て", "と", "な", "に", "ぬ", "ね",
+    "の", "は", "ひ", "ふ", "へ", "ほ", "ま", "み",
+    "む", "め", "も", "や", "ゆ", "よ", "ら", "り",
+    "る", "れ", "ろ", "わ", "を", "ん", "が", "ぎ",
+    "ぐ", "げ", "ご", "ざ", "じ", "ず", "ぜ", "ぞ",
+    "だ", "ぢ", "づ", "で", "ど", "ば", "び", "ぶ",
+    "べ", "ぼ", "ぱ", "ぴ", "ぷ", "ぺ", "ぽ", "ゃ",
+    "ゅ", "ょ", "っ", "ゎ", "ゐ", "ゑ", "ゔ", "ー", "ッ"
+]
+
 for key in list(newDict.keys()):
-    if (str(key[len(key) - 1]) == 'あ' or str(key[len(key) - 1]) == 'い' or
-            str(key[len(key) - 1]) == 'と' or str(key[len(key) - 1]) == 'る'
-            or str(key[len(key) - 1]) == 'す' or str(key[len(key) - 1]) == 'に'):
+    if str(key[len(key) - 1]) in hiraganaChar:
         del newDict[key]
 
 print(newDict)
@@ -86,7 +87,7 @@ avgWord=round(totalWord/len(newDict))
 
 print("Average word count: " + str(avgWord))
 for key in list(newDict.keys()):
-    if newDict[key] < avgWord:
+    if newDict[key] <= avgWord:
         del newDict[key]
 
 print(newDict)

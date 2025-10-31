@@ -36,7 +36,6 @@ def tokenize_texts(lines):
         for m in tokenizer_obj.tokenize(text, mode):
             base = m.dictionary_form()
             pos = m.part_of_speech()[0]
-
             # Only keep content words
             if pos in ["名詞", "動詞", "形容詞"] and len(base) > 1:
                 # Exclude common words and numerics
@@ -45,7 +44,6 @@ def tokenize_texts(lines):
                     all_tokens.append(base)
         tokenized_lines.append(" ".join(words))
     return tokenized_lines, all_tokens
-
 
 tokenized_lines, all_tokens = tokenize_texts(lines)
 print(f"✅ Total tokens: {len(all_tokens)}")

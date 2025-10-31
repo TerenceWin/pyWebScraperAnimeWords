@@ -1,17 +1,26 @@
 import pysrt
-import tokenizer
-from janome.tokenizer import Tokenizer
+from sudachipy import dictionary, tokenizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 #Reading common word files
 jpCommonWordsFile = open("jp_common_words.txt", "r", encoding="utf-8")
 line = jpCommonWordsFile.readline()
 lineNum = 1
-jpDict = {}
+jpDict = set()
 
 while line:
-    jpDict[lineNum] = line.strip()
+    jpDict.add(line.strip())
     lineNum += 1
     line = jpCommonWordsFile.readline()
+
+#Reading jlpt common word files
+jlptFile = open("jlpt_common_words.txt", "r", encoding="utf-8")
+line = jlptFile.readline()
+
+while line:
+    jpDict.add(line.strip())
+    lineNum+=1
+    line = jlptFile.readline()
 
 jpPunctuation = [
     "。", "、", "・", "「", "」",
@@ -24,26 +33,26 @@ jpPunctuation = [
     "‘", "‾", "～"
 ]
 
-tokenizer = Tokenizer()
+tokenizer_obj = dictionary.Dictionary().create()
+mode = tokenizer.Tokenizer.SplitMode.C
+
 subs = pysrt.open('example.srt')
+lines = [sub.text.replace("\n", " ") for sub in subs if sub.text.strip()]
+
 allWords = []
 animeWords = []
 
 #Reading srt files, using token to divide each text lines to Japanese words and append to animeWords
-for sub in subs:
-    text = sub.text
-    tokens = tokenizer.tokenize(text)
+for l in lines:
+    tokens = tokenizer_obj.tokenize(l, mode)
     for token in tokens:
-        word = token.base_form
+        word = token.dictionary_form()
         allWords.append(word)
         if word not in jpDict and word[0] not in jpPunctuation and len(word) > 1 and not word.isdigit():
             # Exclude common words that are in dict, punctuations, 1 word character, digital String
             animeWords.append(word)
 
 #Exclude common words that are in dict, punctuations, 1 word character, digital String
-
-print(len(allWords))
-print(len(animeWords))
 
 #Created an animeDict to indicates occurance of each words
 frequentWords = {}
@@ -74,8 +83,6 @@ hiraganaChar = [
 for key in list(newDict.keys()):
     if str(key[len(key) - 1]) in hiraganaChar:
         del newDict[key]
-
-print(newDict)
 
 #By now we are mostly left with kanji words and anime words
 #Find the average occrance of all words and the kanji words with occurance less than average number
